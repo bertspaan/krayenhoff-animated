@@ -1,0 +1,105 @@
+@font-face {
+  font-family: NEXTBook;
+  src: url(fonts/NEXTBook-Regular.otf) format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: NEXTBook;
+  src: url(fonts/NEXTBook-Italic.otf) format('opentype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: NEXTBook;
+  src: url(fonts/NEXTBook-Light.otf) format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: NEXTBook;
+  src: url(fonts/NEXTBook-LightItalic.otf) format('opentype');
+  font-weight: 300;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: NEXTBook;
+  src: url(fonts/NEXTBook-Medium.otf) format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: NEXTBook;
+  src: url(fonts/NEXTBook-MediumItalic.otf) format('opentype');
+  font-weight: 500;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: NEXTBook;
+  src: url(fonts/NEXTBook-Thin.otf) format('opentype');
+  font-weight: 100;
+  font-style: normal;
+}
+
+html {
+  font-size: 24px;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+#app {
+  font-family: NEXTBook, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#app, a, a:visited {
+  /* color: #f3f3f3; */
+}
+
+h1 {
+  /* font-size: 4.0833333rem; */
+  /* line-height: 4.875rem; */
+  /* margin-top: 1.625rem; */
+  /* margin-bottom: 3.25rem; */
+}
+
+h2 {
+  /* font-size: 2.5416667rem;
+  line-height: 3.25rem;
+  line-height: .8em;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem; */
+}
+
+.dutch h1,
+.dutch h2,
+.dutch h3 {
+  font-weight: normal;
+}
+
+.dutch {
+  font-weight: normal;
+}
+
+.english h1,
+.english h2,
+.english h3 {
+  font-weight: 300;
+}
+
+.english {
+  font-weight: 300;
+}
