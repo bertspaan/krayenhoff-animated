@@ -2,7 +2,8 @@
   <section>
     <div ref="trigger"></div>
     <div :style="{
-      height: `${year.totalDays * pixelsPerDay}px`
+      //height: `${year.totalDays * pixelsPerDay}px`
+      height: `${scrollLength}px`
     }">
     </div>
     <!--
@@ -29,7 +30,13 @@ export default {
   },
   data () {
     return {
-      pixelsPerDay: 25
+      pixelsPerDay: 25,
+      pixelsPerLocation: 400
+    }
+  },
+  computed: {
+    scrollLength: function () {
+      return this.year.locations.length * this.pixelsPerLocation
     }
   },
   methods: {
@@ -44,19 +51,19 @@ export default {
       return padded
     },
     progress: function (event) {
-      const progress = this.padProgress(event.progress)
+      const progress = this.padProgress(event.progress, 0)
 
       const daysProgress = this.year.totalDays * 24 * 60 * 60 * 1000 * progress
       const timestamp = this.year.firstTimestamp + progress
 
-      this.$emit('progress', this.year.year, timestamp, progress)
+      // this.$emit('progress', this.year.year, timestamp, progress)
+      this.$emit('progress', this.year.year, progress)
     }
   },
   mounted: function () {
-
     const scene = new ScrollMagic.Scene({
       triggerElement: this.$refs.trigger,
-      duration: this.year.totalDays * this.pixelsPerDay
+      duration: this.scrollLength
     })
 
     scene.on('progress', this.progress)

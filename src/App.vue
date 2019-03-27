@@ -8,7 +8,7 @@
       </div>
       <div class="timeline-container">
         <Timeline :years="years" :currentYear="currentYear"
-          :progress="progress" />
+          :progress="progress" :locationIndex="locationIndex" />
       </div>
     </div>
 
@@ -37,14 +37,13 @@
 
       <div class="text">
         <div class="page"></div>
-        <footer class="sticky">
+        <!-- <footer class="sticky">
           <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Veniam, nisi.
-            Aspernatur debitis consequuntur error ad cupiditate laborum placeat doloribus
-            necessitatibus, exercitationem iste, quod dicta nulla aut aliquid non
-            esse reiciendis.
+            Hier kan tekst!
           </p>
-        </footer>
+        </footer> -->
+        <div class="page"></div>
+        <div class="end" ref="end"></div>
         <div class="page"></div>
       </div>
     </main>
@@ -115,7 +114,9 @@ export default {
   },
   data () {
     return {
+      yearData: undefined,
       currentYear: undefined,
+      locationIndex: undefined,
       progress: undefined,
       locations: null,
       triangles: null,
@@ -149,22 +150,84 @@ export default {
         // pageScroll()
       }
     },
+    locationIndex: function () {
+      // if (this.map.isMoving()) {
+      // // if (this.locationIndex > 1 || this.locationIndex < this.yearData.locations.length - 1) {
+      //   return
+      // }
+
+      // let bounds = new mapboxgl.LngLatBounds()
+
+      // let fromIndex = Math.max(0, this.locationIndex - 2)
+      // let toIndex = Math.min(this.yearData.locations.length, this.locationIndex + 2)
+
+      // // if (this.locationIndex === 0 || this.locationIndex === this.yearData.locations.length - 1) {
+      //   fromIndex = 0
+      //   toIndex = this.yearData.locations.length
+      // // }
+
+      // if (this.locationIndex === 0) {
+      //   this.map.flyTo({
+      //     center: this.yearData.locations[0].geometry.coordinates,
+      //     zoom: 10,
+      //     duration: 2000,
+      //     speed: 0.3,
+      //     // linear: true,
+      //     padding: 100,
+      //     // maxZoom: 12
+      //   })
+
+      // } else {
+      //   this.yearData.locations
+      //     .slice(fromIndex, toIndex).forEach((location) => {
+      //       bounds = bounds.extend(location.geometry.coordinates)
+      //       location.properties.triangles.forEach((triangle) => {
+      //         triangle.forEach((point) => {
+      //           bounds = bounds.extend(point.coordinates)
+      //         })
+      //       })
+      //     })
+
+      //   this.map.fitBounds(bounds, {
+      //     duration: 2000,
+      //     speed: 0.3,
+      //     // linear: true,
+      //     padding: 100,
+      //     maxZoom: 12
+      //   })
+      // }
+    },
     currentYear: function () {
       let bounds = new mapboxgl.LngLatBounds()
 
-      // this.years[this.currentYear].forEach((location) => {
-      //   bounds = bounds.extend(location.geometry.coordinates)
-      // })
+      this.yearData.locations.forEach((location) => {
+          bounds = bounds.extend(location.geometry.coordinates)
+          location.properties.triangles.forEach((triangle) => {
+            triangle.forEach((point) => {
+              bounds = bounds.extend(point.coordinates)
+            })
+          })
+        })
 
-      // this.map.fitBounds(bounds, {
-      //   duration: 10000
-      // })
+      this.map.fitBounds(bounds, {
+        duration: 2000,
+        speed: 0.3,
+        // linear: true,
+        padding: 100,
+        maxZoom: 12
+      })
     },
     triangles: function () {
       this.map.getSource('triangles').setData(this.triangles)
     },
     locations: function () {
       this.map.getSource('locations').setData(this.locations)
+
+      const bounds = new mapboxgl.LngLatBounds()
+      this.locations.features.forEach((feature) => {
+        bounds.extend(feature.geometry.coordinates)
+      })
+      this.bounds = bounds
 
       const triangles = this.locations.features
         .map((feature) => feature.properties.triangles.map((triangles) => ({
@@ -224,6 +287,17 @@ export default {
     }
   },
   methods: {
+    end: function () {
+      if (this.bounds) {
+        this.map.fitBounds(this.bounds, {
+          duration: 2000,
+          speed: 0.3,
+          // linear: true,
+          padding: 20,
+          maxZoom: 12
+        })
+      }
+    },
     firstTimestamp: function (locations) {
       return new Date(locations[0].properties.date).getTime()
     },
@@ -258,12 +332,16 @@ export default {
 
       return cumulativeDays
     },
-    yearProgress: function (year, timestamp, progress) {
+    yearProgress: function (year, /*timestamp,*/ progress) {
       if (this.currentYear !== year) {
         this.currentYear = year
+        this.yearData = this.years.filter((year) => year.year === this.currentYear)[0]
       }
 
       this.progress = progress
+      this.locationIndex = Math.floor((this.yearData.locations.length - 1) * progress)
+      const timestamp = new Date(this.yearData.locations[this.locationIndex].properties.date).getTime()
+
       this.setTimestamp(timestamp)
     },
     setTimestamp: function (timestamp) {
@@ -319,8 +397,8 @@ export default {
           // 'line-cap': 'round'
         },
         paint: {
-          'line-color': '#1a2b3c',
-          'line-width': 2,
+          'line-color': 'black',
+          'line-width': 3,
           'line-opacity': .8
         }
       })
@@ -334,7 +412,7 @@ export default {
           // 'line-cap': 'round'
         },
         paint: {
-          'circle-radius': 5,
+          'circle-radius': 7,
           'circle-color': '#ed1c24',
           'circle-opacity': ['case',
             ['boolean', ['feature-state', 'visible'], true],
@@ -357,6 +435,14 @@ export default {
   },
   mounted: function () {
     this.scrollMagic = new ScrollMagic.Controller()
+
+    const scene = new ScrollMagic.Scene({
+      triggerElement: this.$refs.end,
+      duration: 0
+    })
+
+    this.scrollMagic.addScene(scene)
+    scene.on('enter', this.end)
 
     // eslint-disable-next-line
     const map = new mapboxgl.Map({
@@ -444,8 +530,8 @@ html, body {
 }
 
 .timeline-container {
-  background-color: #1a2b3c;
-  width: 500px;
+  background-color: black;
+  width: 33.33%;
   flex-shrink: 0;
 }
 

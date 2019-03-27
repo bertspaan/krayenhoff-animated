@@ -13,31 +13,59 @@
           <div class="timeline" :class="{
             active: currentYear === year.year
           }">
-            <svg viewBox="0 -45 400 1090" >
-              <g>
+            <svg viewBox="0 -30 400 1000" >
+              <!-- <g>
                 <line v-for="(position, index) in year.positions" :key="index"
                   x1="380" :y1="1000 / (year.totalPositions / position)"
                   x2="400" :y2="1000 / (year.totalPositions / position)"
                   stroke-width="7" />
-              </g>
+              </g> -->
               <g>
                 <text v-for="(location, index) in year.locations" :key="index "
-                  x="370" :y="1000 / (year.totalPositions / year.positions[index]) + 11"
+                  x="370" :y="1000 / (year.locations.length / index) + 11"
                   :class="{
-                    active: index === currentIndex
+                    active: index === locationIndex
                   }">
                   {{ location.properties.place }}
                 </text>
               </g>
             </svg>
           </div>
-          <div class="line"></div>
+          <div class="middle">
+            <div class="line">
+            </div>
+            <div class="circle-container">
+              <div v-if="currentYear === year.year" class="circle" :style="{
+                top: `calc(${locationIndex / positions.length * 100}% + 7px)`
+              }"></div>
+            </div>
+          </div>
           <div class="title">
             <h3>{{ year.year }}</h3>
             <div v-if="currentYear === year.year">
               <div class="dutch">{{ formatDate(year.locations[currentIndex].properties.date, 'dutch') }}</div>
               <!-- <div class="english">{{ formatDate(year.locations[currentIndex].properties.date, 'english') }}</div> -->
             </div>
+
+            <!-- <svg viewBox="0 -30 400 1000" >
+
+              <g>
+                <text v-for="(location, index) in year.locations" :key="index "
+                  x="370" :y="1000 / (year.locations.length / index) + 11"
+                  :class="{
+                    active: index === locationIndex
+                  }">
+                  {{ location.properties.place }}
+                </text>
+              </g>
+            </svg> -->
+
+
+
+
+
+
+
           </div>
         </div>
       </li>
@@ -51,6 +79,7 @@ export default {
   props: {
     years: Array,
     currentYear: Number,
+    locationIndex: Number,
     progress: Number
   },
   data: function () {
@@ -126,7 +155,7 @@ export default {
   padding: 1em 0;
   box-sizing: border-box;
   height: 100%;
-  pointer-events: none;
+  /* pointer-events: none; */
   color: white;
 }
 
@@ -156,17 +185,31 @@ export default {
   height: 100%;
   width: 100%;
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
+}
+
+.timeline {
+  width: 66%;;
 }
 
 .title {
-  width: 170px;
+  width: 33%;
+}
+
+.timeline, .title {
   flex-shrink: 0;
+}
+
+.title {
   padding: 3px 10px;
 }
 
 .title h3 {
   margin: 0;
+}
+
+.middle {
+  position: relative;
 }
 
 .line {
@@ -179,11 +222,36 @@ export default {
   border-left-width: 6px;
 }
 
+.circle-container {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  box-sizing: border-box;
+  padding-top: 40px;
+  padding-bottom: 10px;
+}
+
+.circle {
+  position: relative;
+  border-width: 5px;
+  border-color: black;
+  border-style: solid;
+  height: 14px;
+  width: 14px;
+  background-color: #ed1c24;
+  border-radius: 50%;
+  transition: top .8s;
+  left: -10px;
+}
+
 .timeline {
+  padding-top: 40px;
+  padding-bottom: 10px;
+  padding-right: 5px;
   text-align: right;
-  width: 100%;
   opacity: 0;
   transition: opacity 0.5s;
+  box-sizing: border-box;
 }
 
 .timeline.active {
@@ -202,7 +270,12 @@ export default {
   fill: white;
 }
 
+.timeline svg line {
+  stroke: white;
+}
+
 .timeline svg text.active {
-  opacity: 1;}
+  opacity: 1;
+}
 
 </style>
