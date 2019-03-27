@@ -167,14 +167,19 @@ export default {
       this.map.getSource('locations').setData(this.locations)
 
       const triangles = this.locations.features
-        .map((feature) => feature.properties.edges.map((edge) => ({
+        .map((feature) => feature.properties.triangles.map((triangles) => ({
           type: 'Feature',
           properties: {
             timestamp: new Date(feature.properties.date).getTime()
           },
           geometry: {
             type: 'LineString',
-            coordinates: [feature.geometry.coordinates, edge.coordinates]
+            coordinates: [
+              feature.geometry.coordinates,
+              triangles[0].coordinates,
+              triangles[1].coordinates,
+              feature.geometry.coordinates
+            ]
           }
         })))
         .flat()
@@ -314,7 +319,7 @@ export default {
           // 'line-cap': 'round'
         },
         paint: {
-          'line-color': '#0d14a8',
+          'line-color': '#1a2b3c',
           'line-width': 2,
           'line-opacity': .8
         }
@@ -377,7 +382,7 @@ export default {
       },
       minZoom: 6,
       maxZoom: 12,
-      // BOUNDS!!!
+      maxBounds: [[1.5, 49.8], [8.5, 55.0]],
       center: [4.7779, 52.1500],
       zoom: 11
     })
