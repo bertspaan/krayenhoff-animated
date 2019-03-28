@@ -8,10 +8,9 @@
       </div>
       <div class="timeline-container">
         <Timeline :years="years" :currentYear="currentYear"
-          :progress="progress" :locationIndex="locationIndex" />
+          :locationIndex="locationIndex" />
       </div>
     </div>
-
     <main>
       <div class="text">
         <div class="page"></div>
@@ -57,55 +56,6 @@ const ScrollMagic = require('scrollmagic')
 import Year from './components/Year.vue'
 import Timeline from './components/Timeline.vue'
 
-// function fitBounds (bounds) {
-//   if (!bounds) {
-//     return
-//   }
-
-//   map.fitBounds(bounds, {
-//     padding: 100,
-//     maxZoom: 16
-//   })
-// }
-// function flyTo (center, zoom) {
-//   map.flyTo({
-//     center: center,
-//     zoom: zoom
-//   })
-// }
-//   const time = {
-//     start: performance.now(),
-//     total: 2000
-//   }
-//   window.scrollTo(0, 0)
-//   function pageScroll () {
-//     // time.elapsed = now - time.start
-//     // const progress = time.elapsed / time.total
-//     window.scrollBy(0, 2)
-//     // if (progress < 1) requestAnimationFrame(tick)
-//     // window.requestAnimationFrame(pageScroll)
-//   }
-//   pageScroll()
-// })
-// function initializeScrollMagic () {
-//   var controller = new ScrollMagic.Controller();
-//   var scene = new ScrollMagic.Scene({
-//       duration: locations.features.length * 1000,
-//       offset: 50
-//     })
-//     .addTo(controller)
-//   map.setFeatureState({source: 'locations-source', id: 1}, { hond: true})
-//   scene.on('progress', function (event) {
-//     var show = Math.round(locations.features.length * event.progress)
-//     for (var i = 0; i < show; i++) {
-//       map.setFeatureState({source: 'locations-source', id: i}, { visible: true})
-//     }
-//     for (var i = show; i < locations.features.length; i++) {
-//       map.setFeatureState({source: 'locations-source', id: i}, { visible: false})
-//     }
-//   })
-// }
-
 export default {
   name: 'app',
   components: {
@@ -117,7 +67,7 @@ export default {
       yearData: undefined,
       currentYear: undefined,
       locationIndex: undefined,
-      progress: undefined,
+      // progress: undefined,
       locations: null,
       triangles: null,
       map: undefined,
@@ -271,18 +221,7 @@ export default {
       return Object.entries(grouped)
         .map(([year, locations]) => ({
           year: parseInt(year),
-          firstTimestamp: this.firstTimestamp(locations),
-          days: this.days(locations),
           locations
-        }))
-        .map((year) => ({
-          ...year,
-          totalDays: year.days[year.days.length - 1],
-          positions: this.positions(year.days)
-        }))
-        .map((year) => ({
-          ...year,
-          totalPositions: year.positions[year.positions.length - 1]
         }))
     }
   },
@@ -298,55 +237,29 @@ export default {
         })
       }
     },
-    firstTimestamp: function (locations) {
-      return new Date(locations[0].properties.date).getTime()
-    },
-    positions: function (cumulativeDays) {
-      const minDays = 8
-      const maxDays = 25
-
-      let previousDays = 0
-      let previousPosition = 0
-      return cumulativeDays.map((days, index) => {
-        let position = 0
-        if (index > 0) {
-          position = Math.max(minDays, Math.min(days - previousDays, maxDays))
-        }
-
-        previousDays = days
-
-        const cumulativePosition = position + previousPosition
-        previousPosition = cumulativePosition
-
-        return cumulativePosition
-      })
-    },
-    days: function (locations) {
-      const firstDate = new Date(locations[0].properties.date)
-
-      const cumulativeDays = locations
-          .map((location) => {
-            const date = new Date(location.properties.date)
-            return (date - firstDate) / 1000 / 60 / 60 / 24
-          })
-
-      return cumulativeDays
-    },
-    yearProgress: function (year, /*timestamp,*/ progress) {
+    yearProgress: function (year, progress) {
       if (this.currentYear !== year) {
         this.currentYear = year
         this.yearData = this.years.filter((year) => year.year === this.currentYear)[0]
       }
 
-      this.progress = progress
-      this.locationIndex = Math.floor((this.yearData.locations.length - 1) * progress)
-      const timestamp = new Date(this.yearData.locations[this.locationIndex].properties.date).getTime()
+      const count = this.yearData.locations.length
+      const index = Math.min(Math.floor((count + 1) * progress) - 1, count - 1)
+
+      this.locationIndex = index
+
+      let timestamp
+      if (index < 0) {
+        timestamp = new Date(this.yearData.locations[0].properties.date).getTime() - 1
+      } else {
+        timestamp = new Date(this.yearData.locations[this.locationIndex].properties.date).getTime()
+      }
 
       this.setTimestamp(timestamp)
     },
     setTimestamp: function (timestamp) {
-      this.map.setFilter('locations', ['<', 'timestamp', timestamp])
-      this.map.setFilter('triangles', ['<', 'timestamp', timestamp])
+      this.map.setFilter('locations', ['<=', 'timestamp', timestamp])
+      this.map.setFilter('triangles', ['<=', 'timestamp', timestamp])
     },
     loadLocations: function () {
        axios
@@ -392,10 +305,6 @@ export default {
         id: 'triangles',
         type: 'line',
         source: 'triangles',
-        layout: {
-          // 'line-join': 'round',
-          // 'line-cap': 'round'
-        },
         paint: {
           'line-color': 'black',
           'line-width': 3,
@@ -407,10 +316,6 @@ export default {
         id: 'locations',
         type: 'circle',
         source: 'locations',
-        layout: {
-          // 'line-join': 'round',
-          // 'line-cap': 'round'
-        },
         paint: {
           'circle-radius': 7,
           'circle-color': '#ed1c24',
@@ -425,8 +330,7 @@ export default {
         }
       })
 
-      // TODO: from data!
-      const from = -6364662400000
+      const from = -7000000000000
       this.setTimestamp(from)
     }
   },
@@ -472,12 +376,6 @@ export default {
       center: [4.7779, 52.1500],
       zoom: 11
     })
-
-    // map.scrollZoom.disable()
-    // map.boxZoom.disable()
-    // map.dragRotate.disable()
-    // map.touchZoomRotate.disable()
-    // map.dragRotate.disable()
 
     map.on('load', () => {
       this.addLayers()

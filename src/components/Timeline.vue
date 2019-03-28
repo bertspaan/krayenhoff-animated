@@ -7,22 +7,16 @@
       }"
       :style="{
         // TODO: nee niet em en niet 50%! maar misschien afhankelijk van de lengte toch een beetje!
-        height: currentYear === year.year ? '70%' : `2em`
+        height: currentYear === year.year ? '70%' : `45px`
       }">
         <div class="year">
           <div class="timeline" :class="{
             active: currentYear === year.year
           }">
             <svg viewBox="0 -30 400 1000" >
-              <!-- <g>
-                <line v-for="(position, index) in year.positions" :key="index"
-                  x1="380" :y1="1000 / (year.totalPositions / position)"
-                  x2="400" :y2="1000 / (year.totalPositions / position)"
-                  stroke-width="7" />
-              </g> -->
               <g>
                 <text v-for="(location, index) in year.locations" :key="index "
-                  x="370" :y="1000 / (year.locations.length / index) + 11"
+                  x="400" :y="1000 / (year.locations.length / index) + 11"
                   :class="{
                     active: index === locationIndex
                   }">
@@ -36,36 +30,28 @@
             </div>
             <div class="circle-container">
               <div v-if="currentYear === year.year" class="circle" :style="{
-                top: `calc(${locationIndex / positions.length * 100}% + 7px)`
+                top: `calc(${locationIndex / year.locations.length * 100}%)`
               }"></div>
             </div>
           </div>
           <div class="title">
             <h3>{{ year.year }}</h3>
-            <div v-if="currentYear === year.year">
-              <div class="dutch">{{ formatDate(year.locations[currentIndex].properties.date, 'dutch') }}</div>
-              <!-- <div class="english">{{ formatDate(year.locations[currentIndex].properties.date, 'english') }}</div> -->
+            <div v-if="currentYear === year.year" class="timeline"
+              :class="{
+                active: currentYear === year.year
+              }">
+              <svg viewBox="0 -30 400 1000" >
+                <g>
+                  <text v-for="(location, index) in year.locations" :key="index "
+                    x="0" :y="1000 / (year.locations.length / index) + 11"
+                    :class="{
+                      active: index === locationIndex
+                    }">
+                      {{ formatDate(location.properties.date, 'dutch') }}
+                  </text>
+                </g>
+              </svg>
             </div>
-
-            <!-- <svg viewBox="0 -30 400 1000" >
-
-              <g>
-                <text v-for="(location, index) in year.locations" :key="index "
-                  x="370" :y="1000 / (year.locations.length / index) + 11"
-                  :class="{
-                    active: index === locationIndex
-                  }">
-                  {{ location.properties.place }}
-                </text>
-              </g>
-            </svg> -->
-
-
-
-
-
-
-
           </div>
         </div>
       </li>
@@ -79,8 +65,7 @@ export default {
   props: {
     years: Array,
     currentYear: Number,
-    locationIndex: Number,
-    progress: Number
+    locationIndex: Number
   },
   data: function () {
     return {
@@ -98,20 +83,6 @@ export default {
           'oktober',
           'november',
           'december'
-        ],
-        english: [
-          'January',
-          'February',
-          'March',
-          'April',
-          'May',
-          'June',
-          'July',
-          'August',
-          'September',
-          'October',
-          'November',
-          'December'
         ]
       }
     }
@@ -119,32 +90,7 @@ export default {
   methods: {
     formatDate: function (date, language) {
       const [month, day] = date.split('-').slice(1, 3).map((num) => parseInt(num))
-
-      if (language === 'dutch') {
-        return `${day} ${this.months.dutch[month - 1]}`
-      }
-
-      return `${this.months.english[month - 1]} ${day}`
-    }
-  },
-  computed: {
-    positions: function () {
-      if (!this.currentYear) {
-        return []
-      }
-
-      return this.years.filter((year) => year.year === this.currentYear)[0].positions
-    },
-    currentIndex: function () {
-      const maxPosition = this.positions[this.positions.length - 1]
-      const position = this.progress * maxPosition
-
-      let index = 0
-      while (this.positions[index] < position) {
-        index += 1
-      }
-
-      return index
+      return `${day} ${this.months.dutch[month - 1]}`
     }
   }
 }
@@ -155,7 +101,6 @@ export default {
   padding: 1em 0;
   box-sizing: border-box;
   height: 100%;
-  /* pointer-events: none; */
   color: white;
 }
 
@@ -201,14 +146,20 @@ export default {
 }
 
 .title {
-  padding: 3px 10px;
+  position: relative;
 }
 
 .title h3 {
-  margin: 0;
+  margin: 0 20px;
 }
 
 .middle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  flex-shrink: 0;
+  text-align: center;
   position: relative;
 }
 
@@ -240,14 +191,17 @@ export default {
   width: 14px;
   background-color: #ed1c24;
   border-radius: 50%;
-  transition: top .8s;
-  left: -10px;
+  transition: top .2s linear;
+  transform: translate(0, 0px);
 }
 
 .timeline {
   padding-top: 40px;
   padding-bottom: 10px;
-  padding-right: 5px;
+
+  padding-left: 20px;
+  padding-right: 20px;
+
   text-align: right;
   opacity: 0;
   transition: opacity 0.5s;
@@ -270,6 +224,17 @@ export default {
   fill: white;
 }
 
+.title .timeline {
+  text-align: left;
+  position: absolute;
+  top: 0;
+  height: 100%;
+}
+
+.title .timeline svg text {
+  text-anchor: start;
+}
+
 .timeline svg line {
   stroke: white;
 }
@@ -277,5 +242,4 @@ export default {
 .timeline svg text.active {
   opacity: 1;
 }
-
 </style>

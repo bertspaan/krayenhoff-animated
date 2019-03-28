@@ -2,19 +2,9 @@
   <section>
     <div ref="trigger"></div>
     <div :style="{
-      //height: `${year.totalDays * pixelsPerDay}px`
       height: `${scrollLength}px`
     }">
     </div>
-    <!--
-    <ol>
-      <li v-for="(location, index) in book.locations" :key="location.properties.date"
-        :style="{
-          height: `${book.days[index]}vh`
-        }">
-        {{ location.properties.place }}: {{ location.properties.date }}
-      </li>
-    </ol> -->
     <div class="spacer"></div>
   </section>
 </template>
@@ -36,7 +26,7 @@ export default {
   },
   computed: {
     scrollLength: function () {
-      return this.year.locations.length * this.pixelsPerLocation
+      return (this.year.locations.length + 2) * this.pixelsPerLocation
     }
   },
   methods: {
