@@ -6,8 +6,7 @@
         active: currentYear === year.year
       }"
       :style="{
-        // TODO: nee niet em en niet 50%! maar misschien afhankelijk van de lengte toch een beetje!
-        height: currentYear === year.year ? '70%' : `45px`
+        height: currentYear === undefined ? `${1 / years.length * 80}%` : (currentYear === year.year ? '70%' : `45px`)
       }">
         <div class="year">
           <div class="timeline" :class="{
@@ -29,7 +28,7 @@
             <div class="line">
             </div>
             <div class="circle-container">
-              <div v-if="currentYear === year.year" class="circle" :style="{
+              <div v-if="currentYear === year.year && locationIndex >= 0" class="circle" :style="{
                 top: `calc(${locationIndex / year.locations.length * 100}%)`
               }"></div>
             </div>
@@ -88,7 +87,7 @@ export default {
     }
   },
   methods: {
-    formatDate: function (date, language) {
+    formatDate: function (date) {
       const [month, day] = date.split('-').slice(1, 3).map((num) => parseInt(num))
       return `${day} ${this.months.dutch[month - 1]}`
     }
@@ -192,7 +191,7 @@ export default {
   background-color: #ed1c24;
   border-radius: 50%;
   transition: top .2s linear;
-  transform: translate(0, 0px);
+  transform: translate(0, 6px);
 }
 
 .timeline {

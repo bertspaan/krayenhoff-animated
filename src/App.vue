@@ -14,19 +14,20 @@
     <main>
       <div class="text">
         <div class="page"></div>
-        <header class="sticky">
+        <div ref="start"></div>
+        <div class="page"></div>
+        <!-- <header class="sticky">
           <h1>Krayenhoff Animated</h1>
           <p class="dutch">
             Deze animatie toont de chronologische volgorde van Kraijenhoffs metingen.
             De volgorde is gebaseerd op Kraijenhoffs eigen wetenschappelijke notitieboeken
             uit de collectie van de Universiteitsbibliotheek Leiden.</p>
-          <!-- <h1>Krayenhoff Animated</h1> -->
           <p class="english">
             This animation shows Kraijenhoff's measurements in chronological order.
             The order is taken from Kraijenhoff's own scientific notebooks housed in
             the collection of Leiden University Libraries.
           </p>
-        </header>
+        </header> -->
         <div class="page"></div>
       </div>
 
@@ -35,14 +36,13 @@
         :year="year" />
 
       <div class="text">
-        <div class="page"></div>
+
         <!-- <footer class="sticky">
           <p>
-            Hier kan tekst!
+            Hier komt footer!
           </p>
         </footer> -->
-        <div class="page"></div>
-        <div class="end" ref="end"></div>
+        <div ref="end"></div>
         <div class="page"></div>
       </div>
     </main>
@@ -78,26 +78,11 @@ export default {
   watch: {
     scrolling: function () {
       if (this.scrolling === true) {
-        const time = {
-          start: performance.now(),
-          total: 2000
-        }
         window.scrollTo(0, 0)
 
-        function pageScroll () {
-          // const now = performance.now()
-          // time.elapsed = now - time.start
-          // const progress = time.elapsed / time.total
-
-          window.scrollBy(0, 25)
-          // if (progress < 1) {
-            // window.requestAnimationFrame(pageScroll)
-          // }
-        }
-
-        window.setInterval(pageScroll, 200)
-
-        // pageScroll()
+        window.setInterval(() => {
+          window.scrollBy(0, 50)
+        }, 200)
       }
     },
     locationIndex: function () {
@@ -148,6 +133,11 @@ export default {
       // }
     },
     currentYear: function () {
+      if (this.currentYear === undefined) {
+        return
+      }
+
+      // eslint-disable-next-line
       let bounds = new mapboxgl.LngLatBounds()
 
       this.yearData.locations.forEach((location) => {
@@ -162,17 +152,28 @@ export default {
       this.map.fitBounds(bounds, {
         duration: 2000,
         speed: 0.3,
-        // linear: true,
         padding: 100,
         maxZoom: 12
       })
     },
     triangles: function () {
       this.map.getSource('triangles').setData(this.triangles)
+
+      // Data is loaded!
+      // Register a global function to start the animation
+      const timeout = 10
+      window.start = () => {
+        window.setTimeout(() => {
+          this.scrolling = true
+        }, timeout * 1000)
+
+        return `Starting animation in ${timeout} seconds`
+      }
     },
     locations: function () {
       this.map.getSource('locations').setData(this.locations)
 
+      // eslint-disable-next-line
       const bounds = new mapboxgl.LngLatBounds()
       this.locations.features.forEach((feature) => {
         bounds.extend(feature.geometry.coordinates)
@@ -226,16 +227,16 @@ export default {
     }
   },
   methods: {
-    end: function () {
+    zoomOut: function () {
       if (this.bounds) {
         this.map.fitBounds(this.bounds, {
           duration: 2000,
           speed: 0.3,
-          // linear: true,
           padding: 20,
           maxZoom: 12
         })
       }
+      this.currentYear = undefined
     },
     yearProgress: function (year, progress) {
       if (this.currentYear !== year) {
@@ -278,17 +279,6 @@ export default {
             }))
           }
         })
-    },
-    keyPress: function (event) {
-      if (event.key === 's') {
-        window.setTimeout(() => {
-          this.scrolling = true
-        }, 2000)
-      }
-
-      if (event.key === 'c') {
-        this.scrolling = false
-      }
     },
     addLayers: function () {
       this.map.addSource('locations', {
@@ -340,13 +330,21 @@ export default {
   mounted: function () {
     this.scrollMagic = new ScrollMagic.Controller()
 
-    const scene = new ScrollMagic.Scene({
+    const sceneStart = new ScrollMagic.Scene({
+      triggerElement: this.$refs.start,
+      duration: 0
+    })
+
+    const sceneEnd = new ScrollMagic.Scene({
       triggerElement: this.$refs.end,
       duration: 0
     })
 
-    this.scrollMagic.addScene(scene)
-    scene.on('enter', this.end)
+    this.scrollMagic.addScene(sceneStart)
+    this.scrollMagic.addScene(sceneEnd)
+
+    sceneStart.on('enter', this.zoomOut)
+    sceneEnd.on('enter', this.zoomOut)
 
     // eslint-disable-next-line
     const map = new mapboxgl.Map({

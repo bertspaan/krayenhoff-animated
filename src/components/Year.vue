@@ -20,7 +20,6 @@ export default {
   },
   data () {
     return {
-      pixelsPerDay: 25,
       pixelsPerLocation: 400
     }
   },
@@ -42,11 +41,6 @@ export default {
     },
     progress: function (event) {
       const progress = this.padProgress(event.progress, 0)
-
-      const daysProgress = this.year.totalDays * 24 * 60 * 60 * 1000 * progress
-      const timestamp = this.year.firstTimestamp + progress
-
-      // this.$emit('progress', this.year.year, timestamp, progress)
       this.$emit('progress', this.year.year, progress)
     }
   },
@@ -66,6 +60,6 @@ export default {
 
 <style scoped>
 .spacer {
-  height: 20vh;
+  height: 40vh;
 }
 </style>
