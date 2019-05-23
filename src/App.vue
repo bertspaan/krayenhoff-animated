@@ -307,7 +307,7 @@ export default {
           'krayenhoff-map': {
             type: 'raster',
             tiles: [
-              'http://mapwarper.net/mosaics/tile/1054/{z}/{x}/{y}.png'
+              'https://mapwarper.net/mosaics/tile/1054/{z}/{x}/{y}.png'
             ],
             tileSize: 256
           }
@@ -412,5 +412,4 @@ header, footer {
 .page {
   height: 100vh;
 }
-
 </style>
