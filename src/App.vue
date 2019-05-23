@@ -67,7 +67,6 @@ export default {
       yearData: undefined,
       currentYear: undefined,
       locationIndex: undefined,
-      // progress: undefined,
       locations: null,
       triangles: null,
       map: undefined,
@@ -84,53 +83,6 @@ export default {
           window.scrollBy(0, 50)
         }, 200)
       }
-    },
-    locationIndex: function () {
-      // if (this.map.isMoving()) {
-      // // if (this.locationIndex > 1 || this.locationIndex < this.yearData.locations.length - 1) {
-      //   return
-      // }
-
-      // let bounds = new mapboxgl.LngLatBounds()
-
-      // let fromIndex = Math.max(0, this.locationIndex - 2)
-      // let toIndex = Math.min(this.yearData.locations.length, this.locationIndex + 2)
-
-      // // if (this.locationIndex === 0 || this.locationIndex === this.yearData.locations.length - 1) {
-      //   fromIndex = 0
-      //   toIndex = this.yearData.locations.length
-      // // }
-
-      // if (this.locationIndex === 0) {
-      //   this.map.flyTo({
-      //     center: this.yearData.locations[0].geometry.coordinates,
-      //     zoom: 10,
-      //     duration: 2000,
-      //     speed: 0.3,
-      //     // linear: true,
-      //     padding: 100,
-      //     // maxZoom: 12
-      //   })
-
-      // } else {
-      //   this.yearData.locations
-      //     .slice(fromIndex, toIndex).forEach((location) => {
-      //       bounds = bounds.extend(location.geometry.coordinates)
-      //       location.properties.triangles.forEach((triangle) => {
-      //         triangle.forEach((point) => {
-      //           bounds = bounds.extend(point.coordinates)
-      //         })
-      //       })
-      //     })
-
-      //   this.map.fitBounds(bounds, {
-      //     duration: 2000,
-      //     speed: 0.3,
-      //     // linear: true,
-      //     padding: 100,
-      //     maxZoom: 12
-      //   })
-      // }
     },
     currentYear: function () {
       if (this.currentYear === undefined) {
