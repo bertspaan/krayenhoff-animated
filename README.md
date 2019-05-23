@@ -1,29 +1,18 @@
-# krayenhoff-animated
+# Krayenhoff Animated
 
-## Project setup
-```
-npm install
-```
+http://bertspaan.nl/krayenhoff-animated
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+Chronologische animatie van de driehoeksmeting van [Cornelis Krayenhoff](https://nl.wikipedia.org/wiki/Cornelis_Rudolphus_Theodorus_Krayenhoff), tussen 1802 en 1810.
 
-### Compiles and minifies for production
-```
-npm run build
-```
+Gemaakt voor de tentoonstelling [Vanaf het hoogste punt: Landmeten in Mesdags tijd](https://www.panorama-mesdag.nl/ontdek/tentoonstellingen/vanaf-het-hoogste-punt-landmeten-in-mesdags-tijd/) in Panorama Mesdag, te zien tussen 31 maart en 22 september 2019.
 
-### Run your tests
-```
-npm run test
-```
+Doen:
 
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+  - Filmpje toevoegen
+  - Screenshot toevoegen
+  - Introductietekst toevoegen
+  - Link naar data toevoegen: https://github.com/bertspaan/krayenhoff-data/blob/master/krayenhoff.geojson
+  - Link naar Map Warper
+  - Tiles uit Map Warper, naar GitHub Pages
+  - Map Warper-kaarten vervangen
+  - Documentatie over Vue toevoegen
